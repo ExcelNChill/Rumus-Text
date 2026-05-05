@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Excel Animasi Interaktif - 12 Rumus</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Calibri, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 900px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .header { margin-bottom: 25px; border-bottom: 2px solid #217346; padding-bottom: 15px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 15px; }
+        .header h1 { color: #217346; font-size: 24px; }
+        .header p { color: #555; font-size: 15px; line-height: 1.5; margin-bottom: 15px; }
+
+        /* Style untuk Tab Menu Rumus */
+        .formula-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .formula-tab {
+            padding: 6px 14px; font-size: 13px; font-weight: 600; color: #555;
+            background: #fff; border: 1px solid #ccc; border-radius: 20px;
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
+        }
+        .formula-tab:hover { background: #f0f0f0; border-color: #aaa; color: #333; }
+        .formula-tab.active { 
+            background: #217346; color: #fff; border-color: #217346; 
+            box-shadow: 0 2px 5px rgba(33,115,70,0.3); transform: translateY(-1px);
+        }
+
+        .xl { border: 1px solid #b0b0b0; border-radius: 6px; overflow: hidden; background: #fff; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .tbar { padding: 8px 14px; display: flex; align-items: center; gap: 10px; }
+        .macs { display: flex; gap: 6px; }
+        .mac { width: 12px; height: 12px; border-radius: 50%; }
+        .tbar-t { color: #fff; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; }
+        .ribbon { background: #f3f9f5; border-bottom: 1px solid #c8dfc8; padding: 5px 10px; display: flex; gap: 15px; }
+        .rb { font-size: 12px; color: #1a5c33; padding: 4px 8px; border-radius: 3px; cursor: default; transition: background 0.2s; }
+        .rb:hover { background: #e2f0e2; }
+        .fbar { display: flex; align-items: center; border-bottom: 1px solid #d0d0d0; background: #fff; height: 30px; }
+        .nb { width: 60px; min-width: 60px; padding: 0 8px; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; color: #333; border-right: 1px solid #d0d0d0; height: 100%; display: flex; align-items: center; font-weight: bold; background: #f9f9f9; }
+        .ffx { padding: 0 12px; color: #217346; font-size: 14px; border-right: 1px solid #d0d0d0; height: 100%; display: flex; align-items: center; font-style: italic; font-weight: 700; background: #f9f9f9; }
+        .ft { flex: 1; padding: 0 12px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; color: #111; display: flex; align-items: center; position: relative; }
+        
+        .gw { position: relative; overflow: hidden; background: #e6e6e6; }
+        table { border-collapse: collapse; width: 100%; table-layout: fixed; background: #fff; }
+        .cn { width: 35px; height: 24px; background: #e0e0e0; border-right: 1px solid #c8c8c8; border-bottom: 1px solid #c8c8c8; }
+        .ch { background: #f0f0f0; border-right: 1px solid #c8c8c8; border-bottom: 1px solid #c8c8c8; text-align: center; font-size: 13px; color: #444; height: 24px; font-weight: normal; padding: 0; }
+        .ch.hl { background: #d0e8d0; color: #1a4d2e; font-weight: bold; border-bottom: 2px solid #217346; }
+        .rn { background: #f0f0f0; border-right: 1px solid #c8c8c8; border-bottom: 1px solid #dfdfdf; font-size: 13px; color: #444; text-align: center; width: 35px; padding: 0; }
+        .rn.hl { background: #d0e8d0; color: #1a4d2e; font-weight: bold; border-right: 2px solid #217346; }
+        .c { height: 28px; border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; font-size: 14px; padding: 0 8px; vertical-align: middle; color: #222; background: #fff; outline: none; cursor: cell; white-space: nowrap; overflow: hidden; }
+        .c.hdr { background: #e8f4e8; font-weight: bold; color: #1a4d2e; text-align: center; border-bottom: 2px solid #b0d0b0; }
+        .c.lbl { color: #333; font-weight: 500; }
+        .c.totr { font-weight: bold; color: #1a5c33; background: #f0f8f0; }
+        .c.inp { background: #fffbe6; cursor: text; transition: background 0.2s; }
+        .c.inp:hover { background: #fff5c2; }
+        .c.inp:focus { outline: 2px solid #217346; outline-offset: -2px; z-index: 2; position: relative; background: #fff; box-shadow: 0 0 5px rgba(33,115,70,0.3); }
+        
+        .c.editing { 
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; color: #000; text-align: left; 
+            background: #fff; padding-left: 5px; overflow: visible; position: relative; z-index: 10;
+        }
+        
+        .xlcur { position: absolute; border: 2.5px solid #217346; pointer-events: none; z-index: 15; opacity: 0; transition: top .35s cubic-bezier(.4,0,.2,1), left .35s cubic-bezier(.4,0,.2,1), width .35s, height .35s, opacity .2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .xlcur::after { content: ''; position: absolute; bottom: -5px; right: -5px; width: 8px; height: 8px; background: #217346; border: 1.5px solid #fff; cursor: crosshair; }
+        .asvg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 14; }
+        .mou { position: absolute; pointer-events: none; z-index: 20; opacity: 0; transition: top .25s cubic-bezier(.4,0,.2,1), left .25s cubic-bezier(.4,0,.2,1), opacity .2s; filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.3)); }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .bcur { display: inline-block; width: 1.5px; height: 14px; background: #000; margin-left: 2px; vertical-align: middle; animation: blink .8s step-end infinite; }
+        
+        .sbar { background: #217346; color: #fff; font-size: 12px; padding: 4px 16px; display: flex; gap: 25px; justify-content: space-between; min-height: 24px; }
+        
+        .divider { margin: 25px 0; display: flex; align-items: center; gap: 12px; }
+        .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, #ccc, transparent); }
+        .divider-txt { font-size: 14px; color: #555; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 8px; background: #f5f5f5; padding: 0 10px; border-radius: 12px; }
+        
+        .ctrl { padding: 15px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px; }
+        .btnr { padding: 10px 24px; background: #217346; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.2s; box-shadow: 0 2px 4px rgba(33,115,70,0.3); display: flex; align-items: center; gap: 8px; }
+        .btnr:hover:not(:disabled) { background: #1a5c33; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(33,115,70,0.4); }
+        .btnr:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        
+        .btng { padding: 10px 20px; background: #fff; color: #555; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btng:hover { background: #f0f0f0; border-color: #bbb; color: #333; }
+        
+        .ctrl-info { font-size: 13px; color: #666; margin-left: auto; display: flex; align-items: center; gap: 6px; font-style: italic; }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #217346; display: inline-block; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 8px rgba(33,115,70,0.6); } }
+
+        /* Styles for Explanation Box Update */
+        .explanation-box { background: #f8f9fa; border-left: 4px solid #217346; border-radius: 6px; padding: 25px; margin-top: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .explanation-box h3 { color: #217346; margin-bottom: 20px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .explanation-box h4 { color: #333; margin-top: 15px; margin-bottom: 8px; font-size: 15px; }
+        .explanation-box p, .explanation-box ul { color: #555; font-size: 14.5px; line-height: 1.6; margin-bottom: 12px; }
+        .explanation-box ul { padding-left: 22px; }
+        .code-snippet { font-family: 'Consolas', 'Courier New', monospace; background: #e8f4e8; color: #155724; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 13.5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-top">
+            <h1>Simulasi Interaktif Rumus Text Excel</h1>
+        </div>
+        <p id="formulaShortDesc">Pilih salah satu rumus di bawah untuk melihat simulasi animasi cara Excel mengeksekusinya.</p>
+        <!-- Kontainer untuk tab menu -->
+        <div class="formula-tabs" id="formulaTabs"></div>
+    </div>
+
+    <!-- UPPER WORKBOOK (ANIMATION) -->
+    <div class="xl">
+        <div class="tbar" style="background:#217346">
+            <div class="macs"><div class="mac" style="background:#ff5f56"></div><div class="mac" style="background:#ffbd2e"></div><div class="mac" style="background:#27c93f"></div></div>
+            <span class="tbar-t">AnimasiRumus.xlsx - Excel (Read-Only)</span>
+        </div>
+        <div class="ribbon">
+            <span class="rb" style="background:#e2f0e2; font-weight:bold;">Beranda</span>
+            <span class="rb">Sisipkan</span>
+            <span class="rb">Tata Letak</span>
+            <span class="rb">Rumus</span>
+            <span class="rb">Data</span>
+        </div>
+        <div class="fbar">
+            <div class="nb" id="nb"></div>
+            <div class="ffx"><i>fx</i></div>
+            <div class="ft" id="ft"></div>
+        </div>
+        <div class="gw" id="gw">
+            <table>
+                <colgroup>
+                    <col style="width:35px">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="cn"></th>
+                        <th class="ch" id="chA">A</th>
+                        <th class="ch" id="chB">B</th>
+                        <th class="ch" id="chC">C</th>
+                        <th class="ch" id="chD">D</th>
+                        <th class="ch" id="chE">E</th>
+                    </tr>
+                </thead>
+                <tbody id="upper-tbody">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+            <div class="xlcur" id="cur"></div>
+            <svg class="asvg">
+                <rect id="ants" fill="rgba(33,115,70,.1)" stroke="#217346" stroke-width="2" stroke-dasharray="6,4" opacity="0">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.5s" repeatCount="indefinite"/>
+                </rect>
+            </svg>
+            <div class="mou" id="mou">
+                <svg width="18" height="22" viewBox="0 0 16 20">
+                    <path d="M1,1 L1,16 L5,12 L7.5,18 L9.8,17 L7.2,11 L12,11 Z" fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        <div class="sbar">
+            <span id="sbar-status">Siap</span>
+            <span>100%</span>
+        </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="ctrl">
+        <button class="btnr" id="runBtn" onclick="runAnim()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Jalankan Rumus
+        </button>
+        <button class="btng" onclick="resetAll()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            Reset
+        </button>
+        <div class="ctrl-info">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#217346" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Edit tabel kuning di bawah ini, animasi akan menyesuaikan
+        </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-txt"><span class="sync-dot"></span> Area Input Data</span>
+        <div class="divider-line"></div>
+    </div>
+
+    <!-- LOWER WORKBOOK (INPUT) -->
+    <div class="xl" style="margin-bottom: 0;">
+        <div class="tbar" style="background:#005a9e">
+            <div class="macs"><div class="mac" style="background:#ff5f56"></div><div class="mac" style="background:#ffbd2e"></div><div class="mac" style="background:#27c93f"></div></div>
+            <span class="tbar-t">DataInput.xlsx - Mode Edit</span>
+        </div>
+        <div class="fbar">
+            <div class="nb" id="inb"></div>
+            <div class="ffx"><i>fx</i></div>
+            <div class="ft" id="ift"></div>
+        </div>
+        <div class="gw">
+            <table>
+                <colgroup>
+                    <col style="width:35px">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="cn"></th>
+                        <th class="ch">A</th><th class="ch">B</th><th class="ch">C</th><th class="ch">D</th><th class="ch">E</th>
+                    </tr>
+                </thead>
+                <tbody id="lower-tbody">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- EXPLANATION SECTION -->
+    <div class="explanation-box">
+        <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span id="exp-title">Mengenal Fungsi</span>
+        </h3>
+        
+        <h4>1. Syntax dari Rumus</h4>
+        <p><span class="code-snippet" id="exp-syntax"></span></p>
+        
+        <h4>2. Rumus ini digunakan untuk apa?</h4>
+        <p id="exp-purpose"></p>
+        
+        <h4>3. Gimana cara kerja dan cara pakenya?</h4>
+        <div id="exp-how" class="exp-how-content"></div>
+    </div>
+</div>
+
+<script>
+    // --- KONFIGURASI 12 RUMUS ---
+    // Diperbarui dengan format penjelasan yang baru: purpose & how.
+    const formulas = {
+        LEN: {
+            title: "Fungsi LEN", syntax: "=LEN(text)",
+            short: "Menghitung jumlah karakter teks, termasuk spasi.",
+            purpose: "Menghitung jumlah total karakter dalam sebuah sel teks, termasuk huruf, angka, spasi, dan karakter spesial.",
+            how: "Cara kerjanya sangat sederhana. Anda cukup memasukkan teks atau menyorot sel referensi ke dalam tanda kurung. Excel akan menghitung setiap karakter satu per satu. Misalnya, pada kata \"Excel 2026\", Excel akan menghitungnya sebagai 10 karakter (termasuk spasi di tengahnya). Cocok untuk validasi batas minimal karakter NIK/KTP.",
+            headers: ["Teks", "Hasil", "", "", ""],
+            data: { A2: "Excel 2026" }, target: "B2",
+            anim: [
+                {t:'move', c:'B2'}, {t:'type', char:'=LEN('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'B2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2 || '').length
+        },
+        TRIM: {
+            title: "Fungsi TRIM", syntax: "=TRIM(text)",
+            short: "Menghapus spasi ganda dan spasi di awal/akhir teks.",
+            purpose: "Membersihkan teks dari spasi yang berlebihan, khususnya spasi ganda di tengah kalimat atau spasi tak terlihat di awal/akhir teks.",
+            how: "Anda menyorot sel yang berisi data kotor. TRIM akan otomatis membuang semua spasi yang ada di paling kiri dan paling kanan. Jika ada spasi berjejer berlebihan di antara kata, TRIM akan merapikannya menjadi tepat satu spasi saja. Sangat berguna untuk membersihkan data mentah (raw data) hasil <i>copy-paste</i>.",
+            headers: ["Teks Asli", "Hasil", "", "", ""],
+            data: { A2: "  Data   Spasi  " }, target: "B2",
+            anim: [
+                {t:'move', c:'B2'}, {t:'type', char:'=TRIM('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'B2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2 || '').trim().replace(/\s+/g, ' ')
+        },
+        UPPER: {
+            title: "Fungsi UPPER", syntax: "=UPPER(text)",
+            short: "Mengubah semua huruf menjadi huruf BESAR (Kapital).",
+            purpose: "Meresmikan atau menstandarisasi seluruh huruf di dalam teks menjadi huruf kapital semua.",
+            how: "Cukup sorot sel yang dituju. UPPER akan memindai setiap karakter; jika Excel menemukan huruf kecil (a-z), akan langsung diubah paksa menjadi huruf besar (A-Z). Angka (0-9) dan simbol tidak akan berubah dan tidak terpengaruh oleh rumus ini.",
+            headers: ["Teks", "Hasil", "", "", ""],
+            data: { A2: "indonesia maju" }, target: "B2",
+            anim: [
+                {t:'move', c:'B2'}, {t:'type', char:'=UPPER('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'B2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2 || '').toUpperCase()
+        },
+        LOWER: {
+            title: "Fungsi LOWER", syntax: "=LOWER(text)",
+            short: "Mengubah semua huruf menjadi huruf kecil.",
+            purpose: "Menurunkan seluruh huruf dalam string teks menjadi huruf kecil semua secara seragam.",
+            how: "Fungsi ini adalah kebalikan mutlak dari UPPER. LOWER memindai teks dan memaksa setiap huruf kapital menjadi huruf kecil. Biasanya digunakan untuk membersihkan format penulisan alamat email atau membuat ID Username standar di mana huruf besar tidak diperbolehkan.",
+            headers: ["Teks", "Hasil", "", "", ""],
+            data: { A2: "JAKARTA SELATAN" }, target: "B2",
+            anim: [
+                {t:'move', c:'B2'}, {t:'type', char:'=LOWER('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'B2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2 || '').toLowerCase()
+        },
+        PROPER: {
+            title: "Fungsi PROPER", syntax: "=PROPER(text)",
+            short: "Mengkapitalkan huruf pertama pada setiap kata.",
+            purpose: "Mengubah teks ke dalam format <i>Title Case</i>, di mana hanya huruf awalan dari setiap kata yang menjadi huruf besar.",
+            how: "Excel membaca setiap kata dalam kalimat (biasanya dipisahkan oleh tanda spasi). Huruf yang terletak di awalan kata otomatis dibesarkan, sementara sisanya diturunkan menjadi huruf kecil. Cara ini paling ampuh dipakai saat Anda perlu merapikan database Nama Orang, Nama Kota, atau Jabatan.",
+            headers: ["Teks", "Hasil", "", "", ""],
+            data: { A2: "budi santoso" }, target: "B2",
+            anim: [
+                {t:'move', c:'B2'}, {t:'type', char:'=PROPER('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'B2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2 || '').replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase())
+        },
+        LEFT: {
+            title: "Fungsi LEFT", syntax: "=LEFT(text, [num_chars])",
+            short: "Mengambil sejumlah karakter dari sisi KIRI teks.",
+            purpose: "Mengekstrak atau mengambil sejumlah karakter (huruf/angka) tertentu, dihitung mulai dari ujung paling kiri dari sebuah teks.",
+            how: "Anda butuh menentukan dua parameter: (1) Target sel yang berisi teks aslinya, dan (2) Berapa jumlah karakter yang ingin diambil. Contohnya teks Anda adalah \"ID-9087\". Jika Anda menggunakan formula dan mensyaratkan 2 karakter, hasilnya adalah potongan huruf \"ID\".",
+            headers: ["Teks", "Jml Karakter", "Hasil", "", ""],
+            data: { A2: "ID-9087", B2: "2" }, target: "C2",
+            anim: [
+                {t:'move', c:'C2'}, {t:'type', char:'=LEFT('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'C2'}, {t:'type', charFn: (d) => `, ${d.B2 || 0}`}, // Hardcoded parameter
+                {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2 || '').substring(0, parseInt(d.B2) || 0)
+        },
+        MID: {
+            title: "Fungsi MID", syntax: "=MID(text, start_num, num_chars)",
+            short: "Mengambil karakter dari tengah teks.",
+            purpose: "Memotong teks untuk mengambil beberapa karakter yang letaknya spesifik berada di <i>tengah-tengah</i> string teks.",
+            how: "Berbeda dengan LEFT, MID mewajibkan 3 parameter sekaligus: (1) Teks Asli, (2) Titik mulai / Karakter awalan ke-berapa, dan (3) Jumlah karakter yang ingin diambil. Jika teksnya \"2026-ABC-99\", mulai posisi ke-6 dengan total ambilan 3 karakter, maka Excel akan memotong pas di huruf \"ABC\".",
+            headers: ["Teks", "Mulai (Start)", "Jumlah", "Hasil", ""],
+            data: { A2: "2026-ABC-99", B2: "6", C2: "3" }, target: "D2",
+            anim: [
+                {t:'move', c:'D2'}, {t:'type', char:'=MID('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'D2'}, {t:'type', charFn: (d) => `, ${d.B2 || 0}, ${d.C2 || 0}`}, // Hardcoded parameters
+                {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => { let start = parseInt(d.B2)-1 || 0; return String(d.A2 || '').substring(start, start + (parseInt(d.C2) || 0)); }
+        },
+        RIGHT: {
+            title: "Fungsi RIGHT", syntax: "=RIGHT(text, [num_chars])",
+            short: "Mengambil sejumlah karakter dari sisi KANAN teks.",
+            purpose: "Mengambil sejumlah digit atau huruf, di mana proses perhitungannya dimulai dari karakter paling ujung di sebelah Kanan (belakang).",
+            how: "Syaratnya sama dengan LEFT (butuh teks referensi dan jumlah karakter). Bedanya, Excel akan menghitung posisi karakter dari paling akhir. Cara ini adalah trik andalan saat kita butuh membuang nama file dan hanya ingin menyisakan 3 karakter paling belakangnya, seperti mengekstrak kata \"pdf\" dari \"Laporan.pdf\".",
+            headers: ["Teks", "Jml Karakter", "Hasil", "", ""],
+            data: { A2: "Laporan.pdf", B2: "3" }, target: "C2",
+            anim: [
+                {t:'move', c:'C2'}, {t:'type', char:'=RIGHT('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'C2'}, {t:'type', charFn: (d) => `, ${d.B2 || 0}`}, // Hardcoded parameter
+                {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => { let num = parseInt(d.B2) || 0; let str = String(d.A2 || ''); return num >= str.length ? str : str.slice(-num); }
+        },
+        CONCATENATE: {
+            title: "Fungsi CONCATENATE", syntax: "=CONCATENATE(text1, [text2], ...)",
+            short: "Menggabungkan beberapa sel teks menjadi satu.",
+            purpose: "Menyambungkan dan merajut isi dari dua atau lebih sel-sel terpisah ke dalam satu sel utuh.",
+            how: "Cara kerjanya manual dengan memilih sel per sel. Tiap sel atau teks tambahan wajib dipisahkan dengan koma. Penting diingat: jika Anda menggabungkan sel \"Nama Depan\" dan \"Belakang\", Excel tidak akan otomatis memberi spasi. Anda wajib menyisipkan spasi mandiri yang diapit kutip ganda <code>\" \"</code> di antara kedua sel tersebut.",
+            headers: ["Teks 1", "Teks 2", "Hasil", "", ""],
+            data: { A2: "Sistem", B2: "Informasi" }, target: "C2",
+            anim: [
+                {t:'move', c:'C2'}, {t:'type', char:'=CONCATENATE('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'C2'}, {t:'type', char:', " ", '}, // Literal Spasi
+                {t:'move', c:'B2'}, {t:'ants', from:'B2', to:'B2'}, {t:'type', char:'B2'},
+                {t:'move', c:'C2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2||'') + " " + String(d.B2||'')
+        },
+        CONCAT: {
+            title: "Fungsi CONCAT", syntax: "=CONCAT(text1, ...)",
+            short: "Pengganti CONCATENATE yang lebih modern, mendukung blok range sekaligus.",
+            purpose: "Menggabungkan nilai dari berbagai rentang sel (range) dengan cara memblok areanya, jauh lebih praktis daripada mengklik satu per satu.",
+            how: "Ini adalah versi <i>upgrade</i> yang ada pada Excel terbaru. Anda tak perlu lagi koma untuk menyambung puluhan sel, cukup <i>drag & drop</i> seluruh areanya (misal <code>A2:C2</code>). Namun kekurangannya, CONCAT belum memiliki kemampuan menambahkan pemisah / delimiter otomatis antar isinya.",
+            headers: ["Teks 1", "Teks 2", "Teks 3", "Hasil", ""],
+            data: { A2: "A", B2: "B", C2: "C" }, target: "D2",
+            anim: [
+                {t:'move', c:'D2'}, {t:'type', char:'=CONCAT('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'C2'}, {t:'type', char:'A2:C2'},
+                {t:'move', c:'D2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => String(d.A2||'') + String(d.B2||'') + String(d.C2||'')
+        },
+        TEXTJOIN: {
+            title: "Fungsi TEXTJOIN", syntax: "=TEXTJOIN(delimiter, ignore_empty, text1, ...)",
+            short: "Menggabungkan teks dengan pemisah/delimiter otomatis.",
+            purpose: "Gabungan canggih untuk menyambung seluruh area teks dengan memberikan karakter pemisah otomatis (seperti koma atau strip) dan fitur abaikan sel kosong.",
+            how: "<ul><li><b>Delimiter:</b> Anda bisa mendikte tanda pemisah apa yang ada di sela-sela kata (misal diisi dengan strip <code>\"-\"</code>).</li><li><b>Ignore Empty:</b> Cukup diisi argumen TRUE. Jika rentang area Anda memiliki sel yang tidak ada isinya (kosong/blank), Excel otomatis melewati dan membuang sel tersebut agar hasil teksnya tidak menjadi <i>double delimiter</i>.</li><li><b>Range:</b> Lalu Anda cukup blok seluruh datanya.</li></ul>",
+            headers: ["Pemisah", "Abaikan Kosong", "Teks 1", "Teks 2", "Teks 3"],
+            data: { A2: "-", B2: "TRUE", C2: "Satu", D2: "", E2: "Dua" }, target: "C3",
+            anim: [
+                {t:'move', c:'C3'}, {t:'type', char:'=TEXTJOIN('},
+                {t:'type', charFn: (d) => `"${d.A2 || ''}", ${String(d.B2 || 'TRUE').toUpperCase()}, `}, // Hardcoded parameter
+                {t:'move', c:'C2'}, {t:'ants', from:'C2', to:'E2'}, {t:'type', char:'C2:E2'},
+                {t:'move', c:'C3'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => {
+                let delim = String(d.A2 || ''); let ignore = String(d.B2).toUpperCase() === 'TRUE';
+                let arr = [d.C2, d.D2, d.E2];
+                if(ignore) arr = arr.filter(v => v !== undefined && v !== null && String(v).trim() !== '');
+                return arr.join(delim);
+            }
+        },
+        DATE: {
+            title: "Fungsi DATE", syntax: "=DATE(year, month, day)",
+            short: "Menciptakan nilai tanggal valid dari angka-angka acak.",
+            purpose: "Merakit komponen berupa angka biasa (komponen tahun, bulan, hari yang sebelumnya terpisah) ke dalam format \"Tanggal\" (Date Format) yang resmi dan sah dalam mesin waktu Excel.",
+            how: "Anda memasukkan urutannya secara konstan: (1) Angka Tahun, (2) Angka Bulan (1-12), dan (3) Angka Hari (1-31). Excel menyerap angka-angka tersebut, merakitnya menjadi <i>serial number</i> waktu, lalu menyajikannya dalam format kalender yang standar (misal DD/MM/YYYY). Rumus ini krusial jika setelahnya Anda ingin menghitung selisih usia atau tanggal jatuh tempo.",
+            headers: ["Tahun", "Bulan", "Hari", "Hasil", ""],
+            data: { A2: "2026", B2: "5", C2: "20" }, target: "D2",
+            anim: [
+                {t:'move', c:'D2'}, {t:'type', char:'=DATE('},
+                {t:'move', c:'A2'}, {t:'ants', from:'A2', to:'A2'}, {t:'type', char:'A2'},
+                {t:'move', c:'D2'}, {t:'type', char:', '},
+                {t:'move', c:'B2'}, {t:'ants', from:'B2', to:'B2'}, {t:'type', char:'B2'},
+                {t:'move', c:'D2'}, {t:'type', char:', '},
+                {t:'move', c:'C2'}, {t:'ants', from:'C2', to:'C2'}, {t:'type', char:'C2'},
+                {t:'move', c:'D2'}, {t:'type', char:')'}, {t:'enter'}
+            ],
+            calc: (d) => {
+                let y = parseInt(d.A2)||0, m = parseInt(d.B2)||1, day = parseInt(d.C2)||1;
+                let dt = new Date(y, m-1, day);
+                return dt.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+        }
+    };
+
+    const cols = ['A','B','C','D','E'];
+    const rows = [1,2,3,4,5,6];
+    let currentFormulaKey = 'LEN';
+    let currentDataState = {};
+    let isAnimating = false;
+    let formulaStrTyping = "";
+
+    // DOM Elements
+    const gw = document.getElementById('gw'); 
+    const btnRun = document.getElementById('runBtn');
+    const tabsContainer = document.getElementById('formulaTabs');
+
+    // --- INITIALIZATION ---
+    function init() {
+        // Build tables dynamically
+        buildTbody('upper-tbody', false);
+        buildTbody('lower-tbody', true);
+
+        // Populate Tabs
+        Object.keys(formulas).forEach(key => {
+            let btn = document.createElement('div');
+            btn.className = 'formula-tab';
+            btn.id = 'tab-' + key;
+            btn.textContent = key;
+            btn.addEventListener('click', () => {
+                if(!isAnimating) loadFormula(key);
+            });
+            tabsContainer.appendChild(btn);
+        });
+
+        loadFormula('LEN');
+    }
+
+    function buildTbody(tbodyId, isInput) {
+        const tbody = document.getElementById(tbodyId);
+        tbody.innerHTML = '';
+        rows.forEach(r => {
+            let tr = document.createElement('tr');
+            let tdRowName = document.createElement('td');
+            tdRowName.className = 'rn';
+            tdRowName.id = `${isInput ? 'i' : 'a'}rn${r}`;
+            tdRowName.textContent = r;
+            tr.appendChild(tdRowName);
+
+            cols.forEach(c => {
+                let td = document.createElement('td');
+                td.id = `${isInput ? 'i' : 'a'}${c}${r}`;
+                if (r === 1) {
+                    td.className = 'c hdr';
+                } else if (isInput) {
+                    td.className = 'c inp';
+                    td.contentEditable = "true";
+                    td.addEventListener('input', () => syncInput(c+r));
+                    td.addEventListener('focus', () => {
+                        document.getElementById('inb').textContent = c+r;
+                        document.getElementById('ift').textContent = td.textContent.trim();
+                    });
+                } else {
+                    td.className = 'c lbl';
+                }
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+    }
+
+    function loadFormula(key) {
+        if(isAnimating) return;
+        currentFormulaKey = key;
+        const conf = formulas[key];
+        currentDataState = { ...conf.data };
+
+        // Update Active Tab UI
+        document.querySelectorAll('.formula-tab').forEach(el => el.classList.remove('active'));
+        let activeTab = document.getElementById('tab-' + key);
+        if(activeTab) activeTab.classList.add('active');
+
+        // UI Texts (Updated to target new IDs)
+        document.getElementById('formulaShortDesc').textContent = conf.short;
+        document.getElementById('exp-title').textContent = conf.title;
+        document.getElementById('exp-syntax').textContent = conf.syntax;
+        document.getElementById('exp-purpose').innerHTML = conf.purpose;
+        document.getElementById('exp-how').innerHTML = conf.how;
+
+        resetGrids();
+
+        // Populate Headers
+        cols.forEach((c, idx) => {
+            const hText = conf.headers[idx] || "";
+            document.getElementById(`a${c}1`).textContent = hText;
+            document.getElementById(`i${c}1`).textContent = hText;
+        });
+
+        // Populate Data
+        for (let cell in conf.data) {
+            document.getElementById(`a${cell}`).textContent = conf.data[cell];
+            document.getElementById(`i${cell}`).textContent = conf.data[cell];
+        }
+
+        // Add visual text helper on TEXTJOIN (Baris 3)
+        if (key === 'TEXTJOIN') {
+            document.getElementById('iA3').textContent = "(Edit baris 2 untuk simulasi)";
+            document.getElementById('iA3').style.color = '#999';
+            document.getElementById('iA3').style.fontSize = '12px';
+            document.getElementById('iA3').contentEditable = "false";
+        }
+
+        calcLiveResult();
+    }
+
+    function syncInput(cellId) {
+        let val = document.getElementById(`i${cellId}`).textContent;
+        currentDataState[cellId] = val;
+        document.getElementById(`a${cellId}`).textContent = val;
+        document.getElementById('ift').textContent = val;
+        if (!isAnimating) calcLiveResult();
+    }
+
+    function calcLiveResult() {
+        const conf = formulas[currentFormulaKey];
+        const res = conf.calc(currentDataState);
+        document.getElementById(`a${conf.target}`).textContent = res;
+        document.getElementById(`i${conf.target}`).textContent = res;
+        document.getElementById(`a${conf.target}`).className = 'c totr';
+        document.getElementById(`i${conf.target}`).className = 'c totr';
+    }
+
+    // --- ANIMATION CORE ---
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    function cPos(id){
+        const el = document.getElementById(id);
+        const wr = gw.getBoundingClientRect();
+        const er = el.getBoundingClientRect();
+        return { t: er.top - wr.top, l: er.left - wr.left, w: er.width, h: er.height };
+    }
+
+    function moveCur(id){
+        const r = cPos('a'+id);
+        const c = document.getElementById('cur');
+        c.style.opacity = '1';
+        c.style.top = r.t + 'px'; 
+        c.style.left = r.l + 'px';
+        c.style.width = r.w + 'px'; 
+        c.style.height = r.h + 'px';
+    }
+
+    function moveMou(id, offsetX = 0.5, offsetY = 0.5){
+        const r = cPos('a'+id);
+        const m = document.getElementById('mou');
+        m.style.opacity = '1';
+        m.style.top = (r.t + r.h * offsetY) + 'px';
+        m.style.left = (r.l + r.w * offsetX) + 'px';
+    }
+
+    function showAnts(fromCell, toCell){
+        const f = cPos('a'+fromCell), t = cPos('a'+toCell);
+        const r = document.getElementById('ants');
+        r.setAttribute('x', f.l - 1); 
+        r.setAttribute('y', f.t - 1);
+        r.setAttribute('width', t.l + t.w - f.l + 2);
+        r.setAttribute('height', t.t + t.h - f.t + 2);
+        r.setAttribute('opacity', '1');
+    }
+
+    function hideAnts() { document.getElementById('ants').setAttribute('opacity', '0'); }
+
+    function highlightHeaders(cellIdRange) {
+        document.querySelectorAll('.hl').forEach(el => el.classList.remove('hl'));
+        
+        let chars = cellIdRange.match(/[A-Z]/g) || [];
+        let nums = cellIdRange.match(/[0-9]+/g) || [];
+        
+        if (chars.length > 0) {
+            let startCol = chars[0].charCodeAt(0);
+            let endCol = chars[chars.length-1].charCodeAt(0);
+            for(let c = startCol; c <= endCol; c++) {
+                let el = document.getElementById('ch' + String.fromCharCode(c));
+                if(el) el.classList.add('hl');
+            }
+        }
+        if (nums.length > 0) {
+            let startRow = parseInt(nums[0]);
+            let endRow = parseInt(nums[nums.length-1]);
+            for(let r = startRow; r <= endRow; r++) {
+                let el = document.getElementById('arn' + r);
+                if(el) el.classList.add('hl');
+            }
+        }
+    }
+
+    async function typeTextAsync(appendStr) {
+        const conf = formulas[currentFormulaKey];
+        const ft = document.getElementById('ft');
+        const resCell = document.getElementById('a' + conf.target);
+        
+        resCell.className = 'c editing';
+        ft.innerHTML = formulaStrTyping;
+        resCell.innerHTML = formulaStrTyping;
+
+        for (let i = 0; i < appendStr.length; i++) {
+            formulaStrTyping += appendStr[i];
+            let s = formulaStrTyping + '<span class="bcur"></span>';
+            ft.innerHTML = s;
+            resCell.innerHTML = s;
+            await sleep(60); 
+        }
+        await sleep(150);
+    }
+
+    async function runAnim() {
+        if(isAnimating) return;
+        isAnimating = true;
+        
+        btnRun.disabled = true;
+        btnRun.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Mensimulasikan...';
+        document.getElementById('sbar-status').textContent = "Menjalankan animasi...";
+
+        const conf = formulas[currentFormulaKey];
+        formulaStrTyping = "";
+        
+        const targetCell = document.getElementById('a' + conf.target);
+        targetCell.textContent = '';
+        targetCell.className = 'c';
+        document.getElementById('ft').innerHTML = '';
+
+        for(let step of conf.anim) {
+            if (step.t === 'move') {
+                moveMou(step.c, 0.5, 0.5);
+                moveCur(step.c);
+                highlightHeaders(step.c);
+                document.getElementById('nb').textContent = step.c;
+                await sleep(600); 
+            } 
+            else if (step.t === 'type') {
+                let strToType = step.char !== undefined ? step.char : step.charFn(currentDataState);
+                await typeTextAsync(strToType);
+            } 
+            else if (step.t === 'ants') {
+                if (step.from !== step.to) {
+                    moveMou(step.to, 0.8, 0.8);
+                    await sleep(400);
+                }
+                showAnts(step.from, step.to);
+                highlightHeaders(step.from + ":" + step.to);
+                await sleep(500);
+            } 
+            else if (step.t === 'enter') {
+                hideAnts();
+                document.querySelectorAll('.hl').forEach(el => el.classList.remove('hl'));
+                
+                document.getElementById('ft').innerHTML = formulaStrTyping;
+                
+                const res = conf.calc(currentDataState);
+                targetCell.className = 'c totr';
+                targetCell.style.background = '#d4edda'; 
+                targetCell.style.color = '#155724';
+                targetCell.textContent = res;
+                
+                setTimeout(() => {
+                    targetCell.style.transition = 'background-color 1s ease';
+                    targetCell.style.background = '#f0f8f0';
+                    targetCell.style.color = '#1a5c33';
+                }, 500);
+
+                document.getElementById(`i${conf.target}`).textContent = res;
+                document.getElementById(`i${conf.target}`).className = 'c totr';
+                
+                document.getElementById('sbar-status').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right:5px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Selesai. Hasil = ${res}`;
+                await sleep(1000);
+            }
+        }
+
+        document.getElementById('mou').style.opacity = '0';
+        await sleep(500);
+        document.getElementById('cur').style.opacity = '0';
+        
+        isAnimating = false;
+        btnRun.disabled = false;
+        btnRun.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Jalankan Rumus';
+    }
+
+    function resetGrids() {
+        document.getElementById('cur').style.opacity = '0';
+        document.getElementById('mou').style.opacity = '0';
+        hideAnts();
+        document.querySelectorAll('.hl').forEach(el => el.classList.remove('hl'));
+        
+        document.getElementById('ft').innerHTML = '';
+        document.getElementById('nb').innerHTML = '';
+        document.getElementById('sbar-status').textContent = 'Siap';
+
+        cols.forEach(c => {
+            rows.forEach(r => {
+                if(r !== 1) {
+                    let ua = document.getElementById(`a${c}${r}`);
+                    if(ua) { ua.textContent = ''; ua.className = 'c lbl'; ua.style.background = ''; }
+                    let ui = document.getElementById(`i${c}${r}`);
+                    if(ui) { ui.textContent = ''; ui.className = 'c inp'; }
+                }
+            });
+        });
+    }
+
+    function resetAll() {
+        if(isAnimating) return; 
+        loadFormula(currentFormulaKey);
+    }
+
+    window.onload = init;
+
+</script>
+
+</body>
+</html>
